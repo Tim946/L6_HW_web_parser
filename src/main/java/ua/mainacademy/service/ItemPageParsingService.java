@@ -1,5 +1,7 @@
 package ua.mainacademy.service;
 
+import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -9,9 +11,26 @@ import ua.mainacademy.model.Item;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemPageParsingService {
-    public static Item getItemFromPage(String url) {
-        Document document = DocumentExtractorService.getDocument(url);
+@AllArgsConstructor
+public class ItemPageParsingService extends Thread {
+
+    private List<Item> items;
+    private Document document;
+    private String url;
+
+    public static boolean isItemPage(String url) {
+        return url.contains("/dp/");
+    }
+
+
+    @Override
+    public void run() {
+        items.add(getItemFromPage(url));
+
+    }
+
+    public Item getItemFromPage(String url) {
+//        Document document = DocumentExtractorService.getDocument(url);
         Element element = document.getElementById("ppd");
         Element elementImage = document.getElementById("imgTagWrapperId");
         Element elementCategory = document.getElementById("wayfinding-breadcrumbs_feature_div");
@@ -38,15 +57,8 @@ public class ItemPageParsingService {
     }
 
     private static String extractImageUrl(Element element) {
-        Elements elements = element.getAllElements();
-        String str ="";
-        for (Element elementEach: elements) {
-            Elements elementsInside = elementEach.getElementsByTag("img");
-            System.out.println("STR " + elementsInside.text());
-                    }
-        //        System.out.println("LINK : " +  element.getElementsByTag("img").text());
-//        return element.getElementsByTag("img").text();
-        return str;
+        String imageUrl = element.getElementsByTag("img").attr("data-old-hires");
+        return imageUrl;
     }
 
     private static int extractInitPrice(Element element) {
@@ -58,6 +70,9 @@ public class ItemPageParsingService {
     }
 
     private static int extractPrice(Element element) {
+        if(element==null){
+            return 0;
+        }
         String row = element.getElementById("priceblock_ourprice").text();
         return Integer.valueOf(row.replaceAll("\\D",""));
 
@@ -74,17 +89,21 @@ public class ItemPageParsingService {
 
 
     private static String extractGroup(Element element) {
+        if (element==null){
+            System.out.println("GROUP : NO GROUP");
+            return "NO GROUP";
+        }
         List<Element> elementList = element.getElementsByAttributeValueStarting("class", "a-list-item");
         if (elementList.isEmpty()) {
             return "";
         }
         System.out.println("GROUP : " + elementList.get(elementList.size()-1).text());
-        return elementList.get(elementList.size()-1).text();
+        return ((Elements) elementList).text();
     }
 
 
     private static String extractCode(String url) {
-        return StringUtils.substringAfterLast(url, "/");
+        return StringUtils.substringAfterLast(url, "/dp/").split("/")[0];
     }
 
     private static String extractName(Element element) {

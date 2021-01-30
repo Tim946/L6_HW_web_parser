@@ -3,12 +3,15 @@ package ua.mainacademy.model;
 
 import lombok.*;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 @Setter
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@XmlRootElement(name="item")
 public class Item {
     private String code;
     private String name;
