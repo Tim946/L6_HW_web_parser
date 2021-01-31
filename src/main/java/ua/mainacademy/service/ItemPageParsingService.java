@@ -70,10 +70,11 @@ public class ItemPageParsingService extends Thread {
     }
 
     private static int extractPrice(Element element) {
-        if(element==null){
+        if((element==null)||(element.getElementById("priceblock_ourprice")==null)){
             return 0;
         }
         String row = element.getElementById("priceblock_ourprice").text();
+        System.out.println("extractPrice : " + row);
         return Integer.valueOf(row.replaceAll("\\D",""));
 
     }

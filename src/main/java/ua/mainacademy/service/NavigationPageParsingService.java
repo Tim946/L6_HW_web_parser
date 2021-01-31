@@ -39,9 +39,9 @@ public class NavigationPageParsingService extends Thread {
 
 int j=1;
         for (String itemLink : itemLinks) {
-//            if (threads.size() > 9) {
-//                return;
-//            }
+            if (threads.size() > 16) {
+                return;
+            }
             try {
                 Thread.sleep((int) (Math.random() * 2000));
             } catch (InterruptedException e) {
