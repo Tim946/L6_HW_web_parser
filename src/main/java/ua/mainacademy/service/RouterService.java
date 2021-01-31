@@ -5,8 +5,6 @@ import ua.mainacademy.model.Item;
 
 import java.util.List;
 
-import static java.lang.StrictMath.random;
-
 @AllArgsConstructor
 public class RouterService extends  Thread{
 

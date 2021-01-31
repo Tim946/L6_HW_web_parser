@@ -22,7 +22,7 @@ public class DocumentExtractorService {
                             )
                     );
             try {
-                Thread.sleep((int) (Math.random() * 2000));
+                Thread.sleep((int) (Math.random() * 10000));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

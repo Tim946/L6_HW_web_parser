@@ -1,14 +1,12 @@
 package ua.mainacademy.service;
 
 import lombok.AllArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import ua.mainacademy.model.Item;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -25,17 +23,20 @@ public class ItemPageParsingService extends Thread {
 
     @Override
     public void run() {
+        try {
+            Thread.sleep((int) (Math.random() * 2000));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         items.add(getItemFromPage(url));
 
     }
 
     public Item getItemFromPage(String url) {
-//        Document document = DocumentExtractorService.getDocument(url);
         Element element = document.getElementById("ppd");
         Element elementImage = document.getElementById("imgTagWrapperId");
         Element elementCategory = document.getElementById("wayfinding-breadcrumbs_feature_div");
 
-//        Item item = new Item();
         String name = extractName(element);
         String code = extractCode(url);
         int price = extractPrice(element);
@@ -57,8 +58,10 @@ public class ItemPageParsingService extends Thread {
     }
 
     private static String extractImageUrl(Element element) {
-        String imageUrl = element.getElementsByTag("img").attr("data-old-hires");
-        return imageUrl;
+        if((element==null)||(element.getElementsByTag("img").attr("data-old-hires")==null)){
+            return "NO IMAGE URL";
+        }
+        return element.getElementsByTag("img").attr("data-old-hires");
     }
 
     private static int extractInitPrice(Element element) {
@@ -74,7 +77,7 @@ public class ItemPageParsingService extends Thread {
             return 0;
         }
         String row = element.getElementById("priceblock_ourprice").text();
-        System.out.println("extractPrice : " + row);
+//        System.out.println("extractPrice : " + row);
         return Integer.valueOf(row.replaceAll("\\D",""));
 
     }
@@ -84,21 +87,18 @@ public class ItemPageParsingService extends Thread {
         if (elementList.isEmpty()) {
             return "";
         }
-        System.out.println("SELLER : " + elementList.get(0).text());
         return elementList.get(0).text();
     }
 
 
     private static String extractGroup(Element element) {
         if (element==null){
-            System.out.println("GROUP : NO GROUP");
             return "NO GROUP";
         }
         List<Element> elementList = element.getElementsByAttributeValueStarting("class", "a-list-item");
         if (elementList.isEmpty()) {
             return "";
         }
-        System.out.println("GROUP : " + elementList.get(elementList.size()-1).text());
         return ((Elements) elementList).text();
     }
 
@@ -108,6 +108,9 @@ public class ItemPageParsingService extends Thread {
     }
 
     private static String extractName(Element element) {
+        if((element==null)||(element.getElementById("productTitle")==null)){
+            return "NO NAME";
+        }
         return element.getElementById("productTitle").text();
     }
 }
